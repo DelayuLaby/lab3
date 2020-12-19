@@ -1,0 +1,195 @@
+#include <iostream>
+#include <cassert>
+
+using namespace std;
+
+class V_matr {
+private:
+	double **matr;
+	int row, col;
+	int k = 0;
+public:
+	V_matr() {
+		row = 1;
+		col = 1;
+		matr = new double* [row];
+		matr[0] = new double[col];
+		matr[0][0] = 2.45;
+	}
+	
+	V_matr(int a, int b)
+	{
+		row = a; 
+		col = b;
+		matr = new double* [row];
+		for (int i = 0; i < row; i++) {
+			matr[i] = new double[col];
+			for (int j = 0; j < col; j++)
+			{
+				matr[i][j] = (rand() % 1000 / 10.0f);
+			}
+		}
+	}
+
+	V_matr(const V_matr& copy) {
+		row = copy.row;
+		col = copy.col;
+		matr = new double*[row];
+		for (int i = 0; i < row; i++) {
+			matr[i] = new double[col];
+			for (int j = 0; j < col; j++) {
+				matr[i][j] = copy.matr[i][j];
+			}
+		}
+	}
+
+	~V_matr() {
+		for (int p=0;p<row;p++)
+		delete[]  matr[p];
+		delete(matr);
+	};
+
+	double& operator()(int indeX, int indeY);
+
+
+	V_matr operator+(V_matr m2) 
+	{
+		V_matr c(row, col);
+		for (int y = 0; y < row; y++)
+		{
+			for (int x = 0; x < col; x++)
+			{
+				c(x,y) = matr[x][y] + m2(x, y);
+			}
+		}
+		return c;
+	}
+
+
+	friend ostream& operator << (ostream& out, V_matr m)
+	{
+		for (int k = 0; k < m.row; k++)
+		{
+			for (int h = 0; h < m.col; h++)
+			{
+				cout << m.getmatr_el(k, h) << " ";
+			}
+			cout << endl;
+		}
+		return out;
+	}
+
+	double getmatr_el(int row_el, int col_el);
+	void input();
+	void setmatr_el(int row_el, int col_el);
+	void change();
+};
+
+double& V_matr::operator()(int indeX, int indeY) {
+	assert(indeX >= 0 && indeX < row);
+		assert(indeY >= 0 && indeY < col);
+		return matr[indeX][indeY];
+}
+
+
+
+
+int main() {
+	V_matr obj1(5, 5);
+	cout << "obj1:\n" << obj1 << "\n" << endl;
+	cout << "obj[1][4]=" << obj1(1, 4) << endl << endl << endl;
+
+	V_matr obj2(5, 5);
+	cout << "obj2:\n" << obj2 << "\n" << endl;
+
+	V_matr sum = obj1 + obj2;
+	cout << "sum:\n" << sum << "\n" << endl;
+
+	V_matr ym;
+	cout << "ym:\n" << ym << endl;
+
+	V_matr* m1 = new V_matr(5, 5);
+	m1->input();
+	cout << "m1:\n" << *m1 << "\n" << endl;
+	
+	V_matr* m1_copy = new V_matr(*m1);
+	cout << "m1_copy:\n" << *m1_copy << "\n" << endl;
+	m1->change();
+	cout << "m1:\n" << *m1 << "\n" << endl;
+	cout << "m1_copy:\n" << *m1_copy << "\n" << endl;
+	delete m1;
+	delete m1_copy;
+
+	V_matr* A1 = new V_matr[5];
+	for (int f = 0; f < 5; f++)
+	{
+		cout << "A1[" << f << "]: " << A1[f] << endl;
+	}
+	for (int f = 0; f < 5; f++)
+	{
+		cout << "A1[" << f << "]: " << endl;
+		A1[f].input();
+	}
+	for (int f = 0; f < 5; f++)
+	{
+		cout << "A1[" << f << "]: " << A1[f] << endl;
+	}
+	delete[]A1;
+
+	
+	return 0;
+}
+
+double V_matr::getmatr_el(int row_el, int col_el) {
+	return matr[row_el][col_el];
+}
+
+void V_matr::setmatr_el(int row_el, int col_el)
+{
+	int k = 0;
+	int flag = 0;
+	do
+	{
+		flag = 0;
+		rewind(stdin);
+		cout << "Input element[" << row_el << "][" << col_el << "]" << endl;
+		cin >> k;
+		if (cin.fail())
+		{
+			cin.clear();
+			cin.ignore();
+			flag = 1;
+		}
+	} while (flag);
+	matr[row_el][col_el] = k;
+}
+
+void V_matr::input()
+{
+	for (int m = 0; m < row; m++)
+	{
+		for (int n = 0; n < col; n++)
+		{
+			setmatr_el(m, n);
+		}
+	}
+}
+
+void V_matr::change() {
+
+	if ((row == 0 && col == 0) || (row == 1 && col == 1)) {
+		cout << "ERROR" << endl;
+		return;
+	}
+		int k = col / 2;
+		double temp = 0;
+		for (int x = 0; x < row; x++) {
+			for (int y = 0; y < col; y++) {
+				temp = matr[x][0];
+				matr[x][0] = matr[x][k];
+				matr[x][k] = temp;
+			}
+		}
+	
+
+}
